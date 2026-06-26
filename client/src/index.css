@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #02040a;
+    color: #f0f4f8;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Cinematic film grain */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+  input, textarea, select { color-scheme: dark; }
+
+  /* Ambient glow animation */
+  @keyframes ambient-drift {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+    33% { transform: translate(30px, -20px) scale(1.05); opacity: 0.7; }
+    66% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.4; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gh-accent-blue text-black px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all duration-500;
+    box-shadow: 0 0 10px rgba(0,229,255,0.15), inset 0 -2px 6px rgba(0,0,0,0.2);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(0,229,255,0.25), inset 0 -2px 6px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    @apply bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-xl text-white border border-white/[0.08] px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all duration-500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    transform: translateY(-1px);
+  }
+  .btn-secondary:active { transform: translateY(0); }
+
+  .btn-danger {
+    @apply bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all duration-500 hover:border-red-500/30;
+  }
+
+  .card {
+    @apply backdrop-blur-2xl border rounded-[20px] p-7;
+    background: linear-gradient(180deg, rgba(10,15,26,0.85) 0%, rgba(5,8,15,0.85) 100%);
+    border-color: rgba(255,255,255,0.04);
+    box-shadow: 0 20px 50px -15px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .input-field {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-gh-accent-blue/40 focus:ring-1 focus:ring-gh-accent-blue/20 transition-all duration-500 w-full text-sm;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  select.input-field {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+  }
+
+  select.input-field option {
+    background-color: #080b12; /* Dark theme background */
+    color: #f0f4f8; /* Light text */
+    padding: 10px;
+  }
+
+  /* Focus states explicitly mapped to our theme cyan/blue */
+  select.input-field:focus {
+    border-color: rgba(0, 229, 255, 0.4);
+    box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.2), inset 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  select.input-field:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
