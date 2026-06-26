@@ -8,9 +8,9 @@ server/dist/
 # Environment files (contain secrets)
 .env
 .env.local
-.env.production
-
+client/.env
 server/.env
+
 
 # IDE
 .vscode/
