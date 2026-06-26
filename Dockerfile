@@ -19,6 +19,8 @@ RUN cd server && npm install
 # Copy all source code
 COPY client/ ./client/
 COPY server/ ./server/
+RUN ls -la
+RUN cat .env.production || echo "NO_ENV_PRODUCTION"
 
 # Build client (Vite)
 RUN cd client && npm run build
