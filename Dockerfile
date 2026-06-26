@@ -43,7 +43,7 @@ COPY --from=build /app/client/dist ./client/dist
 
 # Set environment
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=8080
 
 EXPOSE ${PORT}
 
