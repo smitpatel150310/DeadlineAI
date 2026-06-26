@@ -4,6 +4,7 @@
 FROM node:20-alpine AS build
 
 WORKDIR /app
+COPY .env.production ./
 
 # Copy root package files
 COPY package.json ./
