@@ -1,4 +1,5 @@
 # DeadlineAI
+# DeadlineAI
 
 > AI-powered productivity and deadline management application built with React, Express, Supabase, and Google Gemini.
 
