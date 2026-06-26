@@ -9,7 +9,7 @@ server/dist/
 .env
 .env.local
 .env.production
-client/.env
+
 server/.env
 
 # IDE
