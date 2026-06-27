@@ -18,9 +18,6 @@ export default function Profile() {
   const [defaultPriority, setDefaultPriority] = useState<TaskPriority>(prefs.default_priority || 'medium');
   const [focusDuration, setFocusDuration] = useState(prefs.focus_duration?.toString() || '25');
   
-  const [emailNotifications, setEmailNotifications] = useState(profile?.email_notifications ?? true);
-  const [timezone, setTimezone] = useState(profile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
-
   const [isSaving, setIsSaving] = useState(false);
 
   const totalTasks = tasks.length;
@@ -34,8 +31,6 @@ export default function Profile() {
     try {
       const updates = {
         full_name: displayName,
-        email_notifications: emailNotifications,
-        timezone: timezone,
         preferences: {
           default_category: defaultCategory,
           default_priority: defaultPriority,
@@ -148,53 +143,6 @@ export default function Profile() {
                   value={focusDuration}
                   onChange={(e) => setFocusDuration(e.target.value)}
                 />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-gh-text uppercase tracking-wider mb-4 border-b border-gh-border pb-2">Email Reminders</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-              <div>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <div className="relative">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only" 
-                      checked={emailNotifications} 
-                      onChange={(e) => setEmailNotifications(e.target.checked)} 
-                    />
-                    <div className={`block w-10 h-6 rounded-full transition-colors ${emailNotifications ? 'bg-gh-accent-blue' : 'bg-white/10'}`}></div>
-                    <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${emailNotifications ? 'translate-x-4' : 'translate-x-0'}`}></div>
-                  </div>
-                  <span className="text-sm font-medium text-gh-text">Enable AI Email Reminders</span>
-                </label>
-                <p className="text-xs text-gh-text-secondary mt-2">Receive automated digests and overdue alerts.</p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gh-text-secondary mb-1">Timezone</label>
-                <select className="input-field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
-                  {[
-                    'UTC',
-                    'America/New_York',
-                    'America/Chicago',
-                    'America/Denver',
-                    'America/Los_Angeles',
-                    'Europe/London',
-                    'Europe/Paris',
-                    'Asia/Tokyo',
-                    'Asia/Kolkata',
-                    'Australia/Sydney'
-                  ].map(tz => (
-                    <option key={tz} value={tz}>{tz}</option>
-                  ))}
-                  {/* If the auto-detected timezone isn't in the list, add it */}
-                  {timezone && !['UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Europe/London','Europe/Paris','Asia/Tokyo','Asia/Kolkata','Australia/Sydney'].includes(timezone) && (
-                    <option key={timezone} value={timezone}>{timezone}</option>
-                  )}
-                </select>
-                <p className="text-xs text-gh-text-secondary mt-1">Used for Daily Brief scheduling.</p>
               </div>
             </div>
           </div>

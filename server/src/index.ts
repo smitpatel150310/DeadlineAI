@@ -62,37 +62,6 @@ app.get('/api/health', (_req: Request, res: Response) => {
 // Gemini AI routes
 app.use('/api/gemini', geminiRouter);
 
-// Unsubscribe route for Email Reminders
-app.get('/api/unsubscribe', async (req: Request, res: Response) => {
-  const token = req.query.token as string;
-  if (!token) {
-    res.status(400).send('Missing unsubscribe token.');
-    return;
-  }
-  
-  // In a real implementation, you would update the database here:
-  // await supabase.from('profiles').update({ email_notifications: false }).eq('id', token);
-  
-  res.send(`
-    <html>
-      <body style="background-color: #02040a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh;">
-        <div style="text-align: center; max-width: 400px; padding: 40px; background: #060a14; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
-          <h2 style="color: #00e5ff; margin-bottom: 20px;">Unsubscribed Successfully</h2>
-          <p style="color: #a1a1aa; line-height: 1.5;">You have been unsubscribed from all DeadlineAI email reminders. You can re-enable them at any time in your Profile settings.</p>
-        </div>
-      </body>
-    </html>
-  `);
-});
-
-// Initialize Background Cron Jobs
-import { initializeCronJobs } from './services/cron';
-if (!isDev || process.env.RUN_CRON_IN_DEV === 'true') {
-  // In dev, we typically skip cron to avoid spamming unless explicitly enabled.
-  // We'll run it here for the hackathon demonstration if desired.
-  initializeCronJobs();
-}
-
 // ------------------------------------
 // Static files & SPA fallback (production)
 // ------------------------------------
