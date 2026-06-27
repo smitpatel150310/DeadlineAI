@@ -28,6 +28,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, onSave, onClose, loadi
   const [category, setCategory] = useState<TaskCategory>(task?.category || 'other');
   const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'medium');
   const [progress, setProgress] = useState(task?.progress?.toString() || '0');
+  const [remindersEnabled, setRemindersEnabled] = useState(task?.reminders_enabled ?? true);
 
   // Track unsaved edits globally for Sidebar logo navigation protection
   useEffect(() => {
@@ -38,14 +39,15 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, onSave, onClose, loadi
       estimatedDuration !== (task?.estimated_minutes?.toString() || '') ||
       category !== (task?.category || 'other') ||
       priority !== (task?.priority || 'medium') ||
-      progress !== (task?.progress?.toString() || '0');
+      progress !== (task?.progress?.toString() || '0') ||
+      remindersEnabled !== (task?.reminders_enabled ?? true);
 
     (window as any).__hasUnsavedEdits = isDirty;
     
     return () => {
       (window as any).__hasUnsavedEdits = false;
     };
-  }, [title, description, deadline, estimatedDuration, category, priority, progress, task]);
+  }, [title, description, deadline, estimatedDuration, category, priority, progress, remindersEnabled, task]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +60,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, onSave, onClose, loadi
       estimated_minutes: estimatedDuration ? parseInt(estimatedDuration, 10) : null,
       category,
       priority,
-      progress: parseInt(progress, 10) || 0
+      progress: parseInt(progress, 10) || 0,
+      reminders_enabled: remindersEnabled
     });
   };
 
@@ -166,6 +169,22 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, onSave, onClose, loadi
               />
             </div>
           )}
+
+          <div className="pt-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <div className="relative">
+                <input 
+                  type="checkbox" 
+                  className="sr-only" 
+                  checked={remindersEnabled} 
+                  onChange={(e) => setRemindersEnabled(e.target.checked)} 
+                />
+                <div className={`block w-10 h-6 rounded-full transition-colors ${remindersEnabled ? 'bg-gh-accent-blue' : 'bg-white/10'}`}></div>
+                <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${remindersEnabled ? 'translate-x-4' : 'translate-x-0'}`}></div>
+              </div>
+              <span className="text-sm font-medium text-gh-text">Email Reminders for this task</span>
+            </label>
+          </div>
         </form>
 
         <div className="p-4 border-t border-gh-border flex justify-end gap-2 bg-gh-bg/50 rounded-b-lg">

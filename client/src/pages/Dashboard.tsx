@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { Sparkles, Plus, CheckCircle2, AlertCircle, Clock, LayoutDashboard } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -23,26 +23,26 @@ export default function Dashboard() {
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
-  if (loading) {
-    return <div className="p-8 flex justify-center items-center h-full"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gh-accent-blue"></div></div>;
-  }
-
-  const activeTasks = tasks.filter(t => t.status === 'active');
-  const overdueTasks = activeTasks.filter(t => t.due_date && new Date(t.due_date) < new Date());
-  const completedTasks = tasks.filter(t => t.status === 'completed');
+  const activeTasks = useMemo(() => tasks.filter(t => t.status === 'active'), [tasks]);
+  const overdueTasks = useMemo(() => activeTasks.filter(t => t.due_date && new Date(t.due_date) < new Date()), [activeTasks]);
+  const completedTasks = useMemo(() => tasks.filter(t => t.status === 'completed'), [tasks]);
   
   // Tasks due within 48h
-  const urgentTasks = activeTasks.filter(t => {
+  const urgentTasks = useMemo(() => activeTasks.filter(t => {
     if (!t.due_date) return false;
     const timeDiff = new Date(t.due_date).getTime() - new Date().getTime();
     return timeDiff < 48 * 60 * 60 * 1000;
-  }).sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime());
+  }).sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime()), [activeTasks]);
 
-  const upcomingDeadlines = [...activeTasks].sort((a, b) => {
+  const upcomingDeadlines = useMemo(() => [...activeTasks].sort((a, b) => {
     if (!a.due_date) return 1;
     if (!b.due_date) return -1;
     return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-  }).slice(0, 5);
+  }).slice(0, 5), [activeTasks]);
+
+  if (loading) {
+    return <div className="p-8 flex justify-center items-center h-full"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gh-accent-blue"></div></div>;
+  }
 
   const getGreeting = () => {
     const hour = new Date().getHours();

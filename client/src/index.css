@@ -39,6 +39,27 @@
     66% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.4; }
   }
 
+  @keyframes fade-in-up {
+    0% { opacity: 0; transform: translate3d(0, 30px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -10px, 0); }
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-150%) skewX(-20deg); }
+    100% { transform: translateX(200%) skewX(-20deg); }
+  }
+
+  @keyframes aurora {
+    0%, 100% { transform: translate(0, 0) scale(1); filter: blur(60px); }
+    33% { transform: translate(5%, -5%) scale(1.1); filter: blur(80px); }
+    66% { transform: translate(-5%, 5%) scale(0.9); filter: blur(60px); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -48,42 +69,95 @@
   }
 }
 
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    opacity: 0;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+
+  .glass-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+    animation: shimmer 8s infinite;
+    pointer-events: none;
+    z-index: 20;
+  }
+}
+
 @layer components {
   .btn-primary {
-    @apply bg-gh-accent-blue text-black px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all duration-500;
+    @apply bg-gh-accent-blue text-black px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all;
     box-shadow: 0 0 10px rgba(0,229,255,0.15), inset 0 -2px 6px rgba(0,0,0,0.2);
+    transition-duration: 350ms;
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+    transform: translate3d(0, 0, 0);
   }
   .btn-primary:hover {
-    box-shadow: 0 0 20px rgba(0,229,255,0.25), inset 0 -2px 6px rgba(0,0,0,0.2);
-    transform: translateY(-1px);
+    box-shadow: 0 0 25px rgba(0,229,255,0.35), inset 0 -2px 6px rgba(0,0,0,0.2);
+    transform: translate3d(0, -2px, 0) scale(1.01);
   }
-  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:active { transform: translate3d(0, 0, 0) scale(0.98); }
 
   .btn-secondary {
-    @apply bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-xl text-white border border-white/[0.08] px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all duration-500;
+    @apply bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-xl text-white border border-white/[0.08] px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transition-duration: 350ms;
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+    transform: translate3d(0, 0, 0);
   }
   .btn-secondary:hover {
-    border-color: rgba(255,255,255,0.15);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-    transform: translateY(-1px);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+    transform: translate3d(0, -2px, 0) scale(1.01);
   }
-  .btn-secondary:active { transform: translateY(0); }
+  .btn-secondary:active { transform: translate3d(0, 0, 0) scale(0.98); }
 
   .btn-danger {
-    @apply bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all duration-500 hover:border-red-500/30;
+    @apply bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 px-7 py-3.5 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] hover:border-red-500/40;
+    transform: translate3d(0, 0, 0);
   }
+  .btn-danger:hover {
+    transform: translate3d(0, -2px, 0) scale(1.01);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+  }
+  .btn-danger:active { transform: translate3d(0, 0, 0) scale(0.98); }
 
   .card {
-    @apply backdrop-blur-2xl border rounded-[20px] p-7;
+    @apply backdrop-blur-2xl border rounded-[20px] p-7 transition-all;
     background: linear-gradient(180deg, rgba(10,15,26,0.85) 0%, rgba(5,8,15,0.85) 100%);
     border-color: rgba(255,255,255,0.04);
     box-shadow: 0 20px 50px -15px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
+    transition-duration: 350ms;
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .input-field {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-gh-accent-blue/40 focus:ring-1 focus:ring-gh-accent-blue/20 transition-all duration-500 w-full text-sm;
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-gh-accent-blue/40 focus:ring-1 focus:ring-gh-accent-blue/20 transition-all w-full text-sm;
     box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+    transition-duration: 350ms;
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .input-field:hover {
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   select.input-field {

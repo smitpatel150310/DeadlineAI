@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { DivideIcon as LucideIcon } from 'lucide-react';
 
 interface FeatureCardProps {
@@ -9,10 +9,36 @@ interface FeatureCardProps {
 }
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon: Icon, delay = 0 }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  
+  // Only apply tilt listener to the top row of cards (delay < 300) to preserve global performance
+  const enableTilt = delay < 300;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!enableTilt || !cardRef.current) return;
+    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - left - width / 2) / 30;
+    const y = -(e.clientY - top - height / 2) / 30;
+    
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTilt({ x, y });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (enableTilt) setTilt({ x: 0, y: 0 });
+  };
+
   return (
     <div 
-      className="group relative bg-white/[0.02] border border-white/[0.05] rounded-2xl p-8 transition-all duration-700 hover:bg-white/[0.04] hover:border-white/[0.1] overflow-hidden"
-      style={{ animationDelay: `${delay}ms` }}
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`group relative bg-white/[0.02] border border-white/[0.05] rounded-2xl p-8 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hover:bg-white/[0.04] hover:border-gh-accent-blue/30 hover:shadow-[0_8px_30px_rgba(0,229,255,0.05)] overflow-hidden ${delay ? `delay-${delay}` : ''}`}
+      style={{ 
+        transform: enableTilt ? `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg) translate3d(0, ${tilt.x !== 0 ? '-4px' : '0px'}, 0)` : 'translate3d(0, 0, 0)',
+      }}
     >
       <div className="absolute top-0 right-0 w-40 h-40 bg-gh-accent-blue/[0.03] rounded-full blur-[50px] group-hover:bg-gh-accent-blue/[0.06] transition-colors duration-700 pointer-events-none" />
       

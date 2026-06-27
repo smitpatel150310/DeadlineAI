@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Play,
@@ -22,20 +22,49 @@ import { HeroDashboardPreview } from '../components/landing/HeroDashboardPreview
 import { FeatureCard } from '../components/landing/FeatureCard';
 import { CopilotPreview } from '../components/landing/CopilotPreview';
 import { LandingFooter } from '../components/landing/LandingFooter';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
 export default function Landing() {
+  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setSpotlightPos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Intersection Observers for Scroll Entrances
+  const { ref: heroRef, isIntersecting: heroVisible } = useIntersectionObserver();
+  const { ref: signalsRef, isIntersecting: signalsVisible } = useIntersectionObserver({ threshold: 0.2 });
+  const { ref: featuresRef, isIntersecting: featuresVisible } = useIntersectionObserver({ threshold: 0.1 });
+  const { ref: processRef, isIntersecting: processVisible } = useIntersectionObserver({ threshold: 0.15 });
+  const { ref: copilotRef, isIntersecting: copilotVisible } = useIntersectionObserver({ threshold: 0.2 });
+  const { ref: focusRef, isIntersecting: focusVisible } = useIntersectionObserver({ threshold: 0.2 });
+  const { ref: socialRef, isIntersecting: socialVisible } = useIntersectionObserver({ threshold: 0.2 });
+  const { ref: pricingRef, isIntersecting: pricingVisible } = useIntersectionObserver({ threshold: 0.15 });
+
   return (
-    <div className="min-h-screen bg-[#02040a] text-white font-sans overflow-x-hidden selection:bg-gh-accent-blue/30">
+    <div className="min-h-screen bg-[#02040a] text-white font-sans overflow-x-hidden selection:bg-gh-accent-blue/30 relative">
+      {/* Global Cursor Spotlight */}
+      <div 
+        className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300 opacity-60"
+        style={{
+          background: `radial-gradient(600px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(0, 229, 255, 0.03), transparent 40%)`
+        }}
+      />
+
       <LandingNavbar />
 
       {/* ═══ HERO ═══ */}
-      <section className="relative min-h-screen flex items-center">
-        {/* Layered atmospheric background */}
+      <section ref={heroRef} className="relative min-h-screen flex items-center">
+        {/* Layered atmospheric background with Aurora */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Primary orbital glow */}
-          <div className="absolute top-[20%] left-[15%] w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle,rgba(0,229,255,0.08)_0%,transparent_70%)] blur-[20px] animate-[pulse_8s_ease-in-out_infinite]" />
+          <div className="absolute top-[20%] left-[15%] w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle,rgba(0,229,255,0.06)_0%,transparent_70%)] opacity-80" style={{ animation: 'aurora 15s ease-in-out infinite' }} />
           {/* Secondary violet glow */}
-          <div className="absolute top-[40%] right-[10%] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.06)_0%,transparent_70%)] blur-[20px] animate-[pulse_12s_ease-in-out_infinite_2s]" />
+          <div className="absolute top-[40%] right-[10%] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.05)_0%,transparent_70%)] opacity-80" style={{ animation: 'aurora 20s ease-in-out infinite reverse 2s' }} />
           {/* Horizon line */}
           <div className="absolute bottom-[30%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
           {/* Grid lines faint */}
@@ -46,32 +75,32 @@ export default function Landing() {
           <div className="grid lg:grid-cols-[1fr_1.1fr] gap-16 lg:gap-8 items-center min-h-[calc(100vh-80px)]">
             {/* Left - Editorial copy */}
             <div className="max-w-[640px]">
-              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] mb-10">
+              <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] mb-10 ${heroVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
                 <span className="w-2 h-2 rounded-full bg-gh-accent-blue shadow-[0_0_6px_rgba(0,229,255,0.4)] animate-pulse" />
                 <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/60">AI Productivity OS</span>
               </div>
 
-              <h1 className="text-[3rem] sm:text-[4rem] lg:text-[4rem] xl:text-[5rem] font-extrabold tracking-[-0.04em] leading-[0.9] mb-8">
+              <h1 className={`text-[3rem] sm:text-[4rem] lg:text-[4rem] xl:text-[5rem] font-extrabold tracking-[-0.04em] leading-[0.9] mb-8 ${heroVisible ? 'animate-fade-in-up delay-100' : 'opacity-0'}`}>
                 Command<br />your time.
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00e5ff] via-[#7c3aed] to-[#ec4899]">Finish what<br />matters.</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00e5ff] via-[#7c3aed] to-[#ec4899] bg-[length:200%_auto] animate-[shimmer_3s_linear_infinite]">Finish what<br />matters.</span>
               </h1>
 
-              <p className="text-lg sm:text-xl text-white/50 leading-relaxed mb-12 max-w-[480px] font-light">
+              <p className={`text-lg sm:text-xl text-white/50 leading-relaxed mb-12 max-w-[480px] font-light ${heroVisible ? 'animate-fade-in-up delay-200' : 'opacity-0'}`}>
                 DeadlineAI turns ambitious goals into intelligent action plans. An autonomous Copilot that thinks ahead so you can focus now.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/signup" className="btn-primary text-center inline-flex items-center justify-center gap-2">
-                  Start Planning <ArrowRight className="w-4 h-4" />
+              <div className={`flex flex-col sm:flex-row gap-4 ${heroVisible ? 'animate-fade-in-up delay-300' : 'opacity-0'}`}>
+                <Link to="/signup" className="btn-primary text-center inline-flex items-center justify-center gap-2 group hover:shadow-[0_0_30px_rgba(0,229,255,0.4)] transition-all">
+                  Start Planning <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link to="/login" className="btn-secondary inline-flex items-center justify-center gap-2">
-                  <Play className="w-4 h-4" /> Explore Dashboard
+                <Link to="/login" className="btn-secondary inline-flex items-center justify-center gap-2 group hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all">
+                  <Play className="w-4 h-4 group-hover:scale-110 transition-transform" /> Explore Dashboard
                 </Link>
               </div>
 
               {/* Compact capability strip */}
-              <div className="mt-16 flex items-center gap-8 text-[11px] tracking-[0.15em] uppercase text-white/30 font-medium">
+              <div className={`mt-16 flex items-center gap-8 text-[11px] tracking-[0.15em] uppercase text-white/30 font-medium ${heroVisible ? 'animate-fade-in-up delay-400' : 'opacity-0'}`}>
                 <span className="flex items-center gap-2"><Bot className="w-3.5 h-3.5 text-gh-accent-blue/60" /> AI Copilot</span>
                 <span className="flex items-center gap-2"><Timer className="w-3.5 h-3.5 text-gh-accent-blue/60" /> Focus Mode</span>
                 <span className="flex items-center gap-2"><Target className="w-3.5 h-3.5 text-gh-accent-blue/60" /> Smart Plans</span>
@@ -79,7 +108,7 @@ export default function Landing() {
             </div>
 
             {/* Right - Dashboard preview with depth */}
-            <div className="relative">
+            <div className={`relative ${heroVisible ? 'animate-fade-in-up delay-500' : 'opacity-0'}`}>
               <div className="absolute -inset-20 bg-[radial-gradient(circle_at_center,rgba(0,229,255,0.06)_0%,transparent_60%)]" />
               <div className="relative z-10">
                 <HeroDashboardPreview />
@@ -90,7 +119,7 @@ export default function Landing() {
       </section>
 
       {/* ═══ SIGNAL STRIP ═══ */}
-      <section className="relative border-y border-white/[0.04] py-20">
+      <section ref={signalsRef} className="relative border-y border-white/[0.04] py-20">
         <div className="absolute inset-0 bg-gradient-to-b from-[#02040a] via-[#060a14] to-[#02040a]" />
         <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
@@ -113,9 +142,9 @@ export default function Landing() {
       </section>
 
       {/* ═══ FEATURES ═══ */}
-      <section id="features" className="relative py-32 px-6 sm:px-8">
+      <section id="features" ref={featuresRef} className="relative py-32 px-6 sm:px-8">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(0,229,255,0.04)_0%,transparent_60%)] pointer-events-none" />
-        <div className="max-w-7xl mx-auto relative z-10">
+        <div className={`max-w-7xl mx-auto relative z-10 ${featuresVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <div className="text-center max-w-3xl mx-auto mb-16">
             <p className="text-[11px] tracking-[0.3em] uppercase text-gh-accent-blue/70 font-semibold mb-6">Capabilities</p>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] mb-6">Everything you need to<br />beat the deadline.</h2>
@@ -134,10 +163,10 @@ export default function Landing() {
       </section>
 
       {/* ═══ HOW IT WORKS ═══ */}
-      <section id="how-it-works" className="relative py-32 border-y border-white/[0.04] overflow-hidden">
+      <section id="how-it-works" ref={processRef} className="relative py-32 border-y border-white/[0.04] overflow-hidden">
         <div className="absolute inset-0 bg-[#050810]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,229,255,0.03)_0%,transparent_60%)]" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8">
+        <div className={`relative z-10 max-w-7xl mx-auto px-6 sm:px-8 ${processVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <div className="text-center mb-16">
             <p className="text-[11px] tracking-[0.3em] uppercase text-gh-accent-blue/70 font-semibold mb-6">Process</p>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">How it works</h2>
@@ -163,8 +192,8 @@ export default function Landing() {
       </section>
 
       {/* ═══ AI COPILOT SHOWCASE ═══ */}
-      <section id="copilot" className="relative py-32 px-6 sm:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section id="copilot" ref={copilotRef} className="relative py-32 px-6 sm:px-8">
+        <div className={`max-w-7xl mx-auto ${copilotVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
               <p className="text-[11px] tracking-[0.3em] uppercase text-gh-accent-blue/70 font-semibold mb-6">AI Copilot</p>
@@ -201,10 +230,10 @@ export default function Landing() {
       </section>
 
       {/* ═══ FOCUS MODE ═══ */}
-      <section className="relative py-32 border-y border-white/[0.04] overflow-hidden">
+      <section ref={focusRef} className="relative py-32 border-y border-white/[0.04] overflow-hidden">
         <div className="absolute inset-0 bg-[#050810]" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(0,229,255,0.04)_0%,transparent_50%)] pointer-events-none" />
-        <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-8 text-center">
+        <div className={`relative z-10 max-w-4xl mx-auto px-6 sm:px-8 text-center ${focusVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <p className="text-[11px] tracking-[0.3em] uppercase text-gh-accent-blue/70 font-semibold mb-6">Deep Work</p>
           <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">One task. One timer.<br />Real progress.</h2>
           <p className="text-white/40 mb-12 max-w-xl mx-auto text-[15px] leading-relaxed">Our distraction-free focus mode helps you execute your plan without getting overwhelmed.</p>
@@ -228,8 +257,8 @@ export default function Landing() {
       </section>
 
       {/* ═══ SOCIAL PROOF ═══ */}
-      <section className="py-32 px-6 sm:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section ref={socialRef} className="py-32 px-6 sm:px-8">
+        <div className={`max-w-7xl mx-auto ${socialVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <div className="text-center mb-16">
             <p className="text-[11px] tracking-[0.3em] uppercase text-white/30 font-semibold mb-6">Testimonials</p>
             <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight">Trusted by those who deliver</h2>
@@ -257,9 +286,9 @@ export default function Landing() {
       </section>
 
       {/* ═══ PRICING ═══ */}
-      <section id="pricing" className="relative py-32 px-6 sm:px-8 border-t border-white/[0.04]">
+      <section id="pricing" ref={pricingRef} className="relative py-32 px-6 sm:px-8 border-t border-white/[0.04]">
         <div className="absolute inset-0 bg-[#050810]" />
-        <div className="relative z-10 max-w-5xl mx-auto">
+        <div className={`relative z-10 max-w-5xl mx-auto ${pricingVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <div className="text-center mb-16">
             <p className="text-[11px] tracking-[0.3em] uppercase text-gh-accent-blue/70 font-semibold mb-6">Pricing</p>
             <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">Simple, transparent pricing</h2>

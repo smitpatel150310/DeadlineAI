@@ -1,9 +1,35 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Check, Edit2, Zap, LayoutDashboard, Search, Bell } from 'lucide-react';
 
 export const HeroDashboardPreview: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [tiltStyle, setTiltStyle] = useState({ transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)' });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - left - width / 2) / 25; // Division reduces rotation severity
+    const y = -(e.clientY - top - height / 2) / 25;
+    
+    // Prevent tilt if prefers-reduced-motion is active
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReducedMotion) {
+      setTiltStyle({ transform: `perspective(1000px) rotateX(${y}deg) rotateY(${x}deg)` });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setTiltStyle({ transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)' });
+  };
+
   return (
-    <div className="relative w-full max-w-2xl mx-auto lg:max-w-none lg:w-[120%] lg:-mr-[20%] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#060a14]/90 backdrop-blur-2xl select-none" style={{ boxShadow: '0 40px 80px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.03) inset' }}>
+    <div 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ ...tiltStyle, transition: 'transform 0.1s ease-out' }}
+      className="relative w-full max-w-2xl mx-auto lg:max-w-none lg:w-[120%] lg:-mr-[20%] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#060a14]/90 backdrop-blur-2xl select-none animate-float glass-shimmer" 
+    >
       {/* Window chrome */}
       <div className="h-10 bg-[#02040a]/80 border-b border-white/[0.04] flex items-center px-5 gap-2">
         <div className="flex gap-2">

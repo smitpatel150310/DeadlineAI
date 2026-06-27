@@ -15,6 +15,7 @@ export interface Task {
   status: TaskStatus;
   ai_priority_score: number | null;
   progress: number;
+  reminders_enabled: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -25,6 +26,12 @@ export interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   preferences: Record<string, unknown> | null;
+  email_notifications: boolean;
+  timezone: string;
+  reminder_prefs: {
+    advance_hours: number[];
+    escalation_days: number[];
+  };
   created_at: string;
   updated_at: string;
 }
