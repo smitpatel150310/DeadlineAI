@@ -317,4 +317,56 @@ Respond with:
   }
 });
 
+// ------------------------------------
+// POST /api/gemini/autopilot
+// ------------------------------------
+
+router.post('/autopilot', async (req: Request, res: Response) => {
+  try {
+    const { tasks } = req.body;
+
+    if (!tasks || !Array.isArray(tasks) || tasks.length === 0) {
+      res.status(400).json({ error: 'Missing required field: tasks (non-empty array)' });
+      return;
+    }
+
+    const prompt = `You are the DeadlineAI Autopilot agent. Analyze the following tasks and return a JSON object that exactly matches the schema below. Do not return markdown blocks, just raw JSON.
+
+Task List:
+${formatTasksForPrompt(tasks)}
+
+Required JSON Schema:
+{
+  "conflicts": ["List of detected deadline conflicts or at-risk tasks"],
+  "subtasks": [
+    {
+      "parentTaskTitle": "Original task title to break down",
+      "title": "Subtask title",
+      "estimatedMinutes": 30
+    }
+  ],
+  "schedule": ["Time blocked plan for today and tomorrow"],
+  "summary": "2-sentence plain English summary of what changes you made."
+}
+
+Break down complex tasks into 2-3 smaller subtasks with estimated minutes. Detect any scheduling conflicts.`;
+
+    const ai = getModel();
+    // Using gemini-1.5-pro or gemini-2.5-flash with json instructions.
+    // Since generateWithRetry doesn't natively accept generationConfig, we'll just prompt it.
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json"
+      }
+    });
+
+    const responseText = result.text;
+    res.json({ response: responseText });
+  } catch (error: any) {
+    handleGeminiError(error, res);
+  }
+});
+
 export default router;

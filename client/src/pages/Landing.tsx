@@ -23,6 +23,7 @@ import { FeatureCard } from '../components/landing/FeatureCard';
 import { CopilotPreview } from '../components/landing/CopilotPreview';
 import { LandingFooter } from '../components/landing/LandingFooter';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { AutopilotShowcase } from '../components/landing/AutopilotShowcase';
 
 export default function Landing() {
   const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
@@ -161,6 +162,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* ═══ AUTOPILOT SHOWCASE ═══ */}
+      <AutopilotShowcase />
 
       {/* ═══ HOW IT WORKS ═══ */}
       <section id="how-it-works" ref={processRef} className="relative py-32 border-y border-white/[0.04] overflow-hidden">

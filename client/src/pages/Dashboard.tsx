@@ -10,6 +10,7 @@ import { useTasks } from '../hooks/useTasks';
 import { api } from '../lib/api';
 import { TaskCard } from '../components/TaskCard';
 import { TaskForm } from '../components/TaskForm';
+import { AutopilotModal } from '../components/AutopilotModal';
 import { Task } from '../types';
 
 export default function Dashboard() {
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const { tasks, loading, createTask, updateTask, completeTask, archiveTask, deleteTask } = useTasks();
   
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+  const [isAutopilotOpen, setIsAutopilotOpen] = useState(false);
   const [aiNextAction, setAiNextAction] = useState<string | null>(null);
   const [aiPlan, setAiPlan] = useState<string | null>(null);
   const [isGeneratingNext, setIsGeneratingNext] = useState(false);
@@ -86,9 +88,19 @@ export default function Dashboard() {
           </h1>
           <p className="text-gh-text-secondary">{format(new Date(), 'EEEE, MMMM do, yyyy')}</p>
         </div>
-        <button onClick={() => { setEditingTask(undefined); setIsTaskFormOpen(true); }} className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> Add Task
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsAutopilotOpen(true)} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gh-accent-blue/10 border border-gh-accent-blue/30 hover:bg-gh-accent-blue/20 hover:border-gh-accent-blue/50 hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all duration-300 relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gh-accent-blue/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+            <Sparkles size={16} className="text-gh-accent-blue" />
+            <span className="relative z-10">Run Autopilot</span>
+          </button>
+          <button onClick={() => { setEditingTask(undefined); setIsTaskFormOpen(true); }} className="btn-primary flex items-center gap-2">
+            <Plus size={18} /> Add Task
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
@@ -246,6 +258,14 @@ export default function Dashboard() {
           }}
         />
       )}
+
+      <AutopilotModal 
+        isOpen={isAutopilotOpen} 
+        onClose={() => setIsAutopilotOpen(false)} 
+        tasks={tasks}
+        createTask={createTask}
+        updateTask={updateTask}
+      />
     </div>
   );
 }
